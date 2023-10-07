@@ -5,9 +5,12 @@ import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import top.hang.share.common.exception.BusinessException;
 import top.hang.share.common.exception.BusinessExceptionEnum;
+import top.hang.share.common.util.SnowUtil;
 import top.hang.share.user.domain.dto.LoginDTO;
 import top.hang.share.user.domain.entity.User;
 import top.hang.share.user.mapper.UserMapper;
+
+import java.util.Date;
 
 /**
  * @author : Ahang
@@ -37,5 +40,28 @@ public class UserService  {
         }
         // 都正确返回
         return userDb;
+    }
+
+    public Long register(LoginDTO loginDTO){
+        // 查询用户
+        User userDb = userMapper.selectOne(new QueryWrapper<User>().lambda().eq(User::getPhone, loginDTO.getPhone()));
+        // 找到抛出异常
+        if(userDb != null){
+            throw new BusinessException(BusinessExceptionEnum.PHONE_EXIST);
+        }
+        User user = User.builder()
+                .id(SnowUtil.getSnowflakeNextId())
+                .phone(loginDTO.getPhone())
+                .password(loginDTO.getPassword())
+                .nickname("新用户")
+                .roles("user")
+                .avatarUrl("https://i2.100024.xyz/2023/01/26/3e727b.webp")
+                .bonus(100)
+                .createTime(new Date())
+                .updateTime(new Date())
+                .build();
+        // 都正确返回
+        userMapper.insert(user);
+        return user.getId();
     }
 }

@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
+
 /**
  * @author : Ahang
  * @program : share-api
@@ -23,6 +25,6 @@ public class User {
     private String roles;
     private String avatarUrl;
     private Integer bonus;
-    private Data createTime;
-    private Data updateTime;
+    private Date createTime;
+    private Date updateTime;
 }

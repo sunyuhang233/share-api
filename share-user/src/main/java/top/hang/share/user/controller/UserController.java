@@ -38,4 +38,11 @@ public class UserController {
         resp.setData(user);
         return resp;
     }
+    @PostMapping("/register")
+    private CommonResp<Long> register(@Valid @RequestBody LoginDTO loginDTO) {
+        Long id = userService.register(loginDTO);
+        CommonResp<Long> resp = new CommonResp<>();
+        resp.setData(id);
+        return resp;
+    }
 }
