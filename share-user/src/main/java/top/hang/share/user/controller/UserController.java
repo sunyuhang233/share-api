@@ -5,7 +5,7 @@ import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 import top.hang.share.common.resp.CommonResp;
 import top.hang.share.user.domain.dto.LoginDTO;
-import top.hang.share.user.domain.entity.User;
+import top.hang.share.user.domain.resp.UserLoginResp;
 import top.hang.share.user.service.UserService;
 
 /**
@@ -32,9 +32,9 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    private CommonResp<User> login(@Valid @RequestBody LoginDTO loginDTO) {
-        User user = userService.login(loginDTO);
-        CommonResp<User> resp = new CommonResp<>();
+    private CommonResp<UserLoginResp> login(@Valid @RequestBody LoginDTO loginDTO) {
+        UserLoginResp user = userService.login(loginDTO);
+        CommonResp<UserLoginResp> resp = new CommonResp<>();
         resp.setData(user);
         return resp;
     }
