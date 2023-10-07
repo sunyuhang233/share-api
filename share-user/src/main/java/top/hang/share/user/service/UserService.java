@@ -3,6 +3,8 @@ package top.hang.share.user.service;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
+import top.hang.share.common.exception.BusinessException;
+import top.hang.share.common.exception.BusinessExceptionEnum;
 import top.hang.share.user.domain.dto.LoginDTO;
 import top.hang.share.user.domain.entity.User;
 import top.hang.share.user.mapper.UserMapper;
@@ -27,11 +29,11 @@ public class UserService  {
         User userDb = userMapper.selectOne(new QueryWrapper<User>().lambda().eq(User::getPhone, loginDTO.getPhone()));
         // 没有找到抛出异常
         if(userDb == null){
-            throw new RuntimeException("手机号不存在");
+            throw new BusinessException(BusinessExceptionEnum.PHONE_NOT_EXIST);
         }
         // 校验密码
         if(!userDb.getPassword().equals(loginDTO.getPassword())){
-            throw new RuntimeException("密码不正确");
+            throw new BusinessException(BusinessExceptionEnum.PASSWORD_ERROR);
         }
         // 都正确返回
         return userDb;
