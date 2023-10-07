@@ -1,4 +1,4 @@
-package top.hang.share.common.util;
+package top.hang.share.gateway.util;
 
 import cn.hutool.core.date.DateField;
 import cn.hutool.core.date.DateTime;

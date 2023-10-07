@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.Ordered;
-import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
@@ -15,7 +14,7 @@ import reactor.core.publisher.Mono;
  * @create : 2023-10-07 13:36
  **/
 
-@Component
+//@Component
 @Slf4j
 public class Test1Filter implements GlobalFilter, Ordered {
 
