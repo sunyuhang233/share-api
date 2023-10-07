@@ -20,7 +20,7 @@ public class User {
     private String phone;
     private String password;
     private String nickname;
-    private String role;
+    private String roles;
     private String avatarUrl;
     private Integer bonus;
     private Data createTime;

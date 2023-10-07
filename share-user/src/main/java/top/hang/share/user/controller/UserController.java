@@ -1,9 +1,9 @@
 package top.hang.share.user.controller;
 
 import jakarta.annotation.Resource;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import top.hang.share.user.domain.dto.LoginDTO;
+import top.hang.share.user.domain.entity.User;
 import top.hang.share.user.service.UserService;
 
 /**
@@ -21,5 +21,10 @@ public class UserController {
     @GetMapping("/count")
     private Long count(){
         return userService.toCount();
+    }
+
+    @PostMapping("/login")
+    private User login(@RequestBody LoginDTO loginDTO){
+        return userService.login(loginDTO);
     }
 }
