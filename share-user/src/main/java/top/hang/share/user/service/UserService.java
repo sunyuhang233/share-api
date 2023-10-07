@@ -1,12 +1,11 @@
 package top.hang.share.user.service;
 
-import cn.hutool.core.bean.BeanUtil;
-import cn.hutool.jwt.JWTUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import top.hang.share.common.exception.BusinessException;
 import top.hang.share.common.exception.BusinessExceptionEnum;
+import top.hang.share.common.util.JwtUtil;
 import top.hang.share.common.util.SnowUtil;
 import top.hang.share.user.domain.dto.LoginDTO;
 import top.hang.share.user.domain.entity.User;
@@ -14,7 +13,6 @@ import top.hang.share.user.domain.resp.UserLoginResp;
 import top.hang.share.user.mapper.UserMapper;
 
 import java.util.Date;
-import java.util.Map;
 
 /**
  * @author : Ahang
@@ -45,9 +43,7 @@ public class UserService  {
         // 都正确返回
         UserLoginResp loginResp = new UserLoginResp();
         loginResp.setUser(userDb);
-        String key="AHang";
-        Map<String, Object> beanToMap = BeanUtil.beanToMap(loginResp);
-        String token = JWTUtil.createToken(beanToMap, key.getBytes());
+        String token= JwtUtil.createToken(userDb.getId(),userDb.getPhone());
         loginResp.setToken(token);
         return loginResp;
     }
