@@ -1,0 +1,4 @@
+GET http://localhost:8001/user-service/test
+Accept: application/json
+
+###
