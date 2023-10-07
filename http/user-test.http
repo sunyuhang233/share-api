@@ -2,3 +2,7 @@ GET http://localhost:8001/user-service/test
 Accept: application/json
 
 ###
+GET http://localhost:5000/user-service/test
+Accept: application/json
+
+###
