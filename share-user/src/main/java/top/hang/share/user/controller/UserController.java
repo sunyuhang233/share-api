@@ -19,6 +19,12 @@ public class UserController {
     @Resource
     private UserService userService;
 
+    @GetMapping("/hello")
+    private Long hello(){
+        int a=1/0;
+        return 1L;
+    }
+
     @GetMapping("/count")
     private Long count(){
         return userService.toCount();

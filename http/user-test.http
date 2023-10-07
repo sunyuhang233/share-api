@@ -6,6 +6,10 @@ GET http://localhost:5000/user-service/test
 Accept: application/json
 
 ###
+GET http://localhost:5000/user-service/user/hello
+Accept: application/json
+
+###
 GET http://localhost:5000/user-service/user/count
 Accept: application/json
 
