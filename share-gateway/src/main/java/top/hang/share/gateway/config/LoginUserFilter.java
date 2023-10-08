@@ -23,7 +23,11 @@ public class LoginUserFilter implements Ordered, GlobalFilter {
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         String path = exchange.getRequest().getURI().getPath();
         // 白名单
-        if(path.contains("/admin") || path.contains("/user-service/user/login") || path.contains("/user-service/user/register")) {
+        if(path.contains("/admin")
+                || path.contains("/user-service/user/login")
+                || path.contains("/user-service/user/register")
+                || path.contains("content-service/share/notice")
+        ) {
             log.info("不需要登录验证:{}", path);
             return chain.filter(exchange);
         }else {
