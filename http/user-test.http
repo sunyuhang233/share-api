@@ -1,5 +1,6 @@
-GET http://localhost:8001/user-service/test
+GET http://localhost:5000/user-service/test
 Accept: application/json
+token: {{token}}
 
 ###
 GET http://localhost:5000/user-service/test
@@ -22,6 +23,10 @@ Content-Type: application/json
   "phone": "13951905171",
   "password": "123123"
 }
+> {%
+ client.global.set("token",response.body.data.token);
+
+ %}
 ###
 POST http://localhost:5000/user-service/user/register
 Content-Type: application/json

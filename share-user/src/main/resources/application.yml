@@ -8,6 +8,6 @@ spring:
     username: root
     password: sunyuhang233
     driver-class-name: com.mysql.cj.jdbc.Driver
-logging:
-  level:
-    top.hang.share.user.mapper: debug
+#logging:
+#  level:
+#    top.hang.share.user.mapper: debug
