@@ -14,60 +14,63 @@ import top.hang.share.user.mapper.UserMapper;
 
 import java.util.Date;
 
-/**
- * @author : Ahang
- * @program : share-api
- * @description : UserService
- * @create : 2023-10-07 10:43
- **/
 @Service
-public class UserService  {
+public class UserService {
     @Resource
     private UserMapper userMapper;
 
-    public Long toCount(){
+    public Long count(){
         return userMapper.selectCount(null);
     }
 
-    public UserLoginResp login(LoginDTO loginDTO){
-        // 查询用户
-        User userDb = userMapper.selectOne(new QueryWrapper<User>().lambda().eq(User::getPhone, loginDTO.getPhone()));
-        // 没有找到抛出异常
-        if(userDb == null){
+    public UserLoginResp login(LoginDTO loginDTO) {
+        //根据手机号查找用户
+        User userDB = userMapper.selectOne(new QueryWrapper<User>().lambda().eq(User::getPhone, loginDTO.getPhone()));
+        //没找到，抛出运行时异常
+        if (userDB == null) {
+//            throw new RuntimeException("手机号不存在");
             throw new BusinessException(BusinessExceptionEnum.PHONE_NOT_EXIST);
         }
-        // 校验密码
-        if(!userDb.getPassword().equals(loginDTO.getPassword())){
+        //密码错误
+        if (!userDB.getPassword().equals(loginDTO.getPassword())) {
+//            throw new RuntimeException("密码错误");
             throw new BusinessException(BusinessExceptionEnum.PASSWORD_ERROR);
         }
-        // 都正确返回
-        UserLoginResp loginResp = new UserLoginResp();
-        loginResp.setUser(userDb);
-        String token= JwtUtil.createToken(userDb.getId(),userDb.getPhone());
-        loginResp.setToken(token);
-        return loginResp;
+        //都正确,返回
+        UserLoginResp userLoginResp=UserLoginResp.builder()
+                .user(userDB)
+                .build();
+//        String key="InfinityX7";
+//        Map<String, Object> map= BeanUtil.beanToMap(userLoginResp);
+//        String token= JWTUtil.createToken(map,key.getBytes());
+        String token= JwtUtil.createToken(userLoginResp.getUser().getId(), userLoginResp.getUser().getPhone());
+        userLoginResp.setToken(token);
+        return userLoginResp;
     }
 
-    public Long register(LoginDTO loginDTO){
-        // 查询用户
-        User userDb = userMapper.selectOne(new QueryWrapper<User>().lambda().eq(User::getPhone, loginDTO.getPhone()));
-        // 找到抛出异常
-        if(userDb != null){
+    public Long register(LoginDTO loginDTO) {
+        //根据手机号查找用户
+        User userDB = userMapper.selectOne(new QueryWrapper<User>().lambda().eq(User::getPhone, loginDTO.getPhone()));
+        //找到了
+        if (userDB != null) {
             throw new BusinessException(BusinessExceptionEnum.PHONE_EXIST);
         }
-        User user = User.builder()
+        User saveUser = User.builder()
+                //使用雪花算法生成id
                 .id(SnowUtil.getSnowflakeNextId())
                 .phone(loginDTO.getPhone())
                 .password(loginDTO.getPassword())
                 .nickname("新用户")
                 .roles("user")
-                .avatarUrl("https://i2.100024.xyz/2023/01/26/3e727b.webp")
+                .avatarUrl("https://i2.10024.xyz/2023/01/26/3exzjl.webp")
                 .bonus(100)
                 .createTime(new Date())
                 .updateTime(new Date())
                 .build();
-        // 都正确返回
-        userMapper.insert(user);
-        return user.getId();
+        userMapper.insert(saveUser);
+        return saveUser.getId();
+
     }
+
+
 }

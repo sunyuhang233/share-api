@@ -1,63 +1,50 @@
 package top.hang.share.common.handler;
 
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
-import top.hang.share.common.exception.BusinessException;
 import top.hang.share.common.resp.CommonResp;
+import top.hang.share.common.exception.BusinessException;
 
-/**
- * @author : Ahang
- * @program : share-api
- * @description : ControllerExceptionHandler
- * @create : 2023-10-07 12:38
- **/
 @ControllerAdvice
 @Slf4j
 public class ControllerExceptionHandler {
 
-    /***
-     * @description 系统异常
-     * @param e
-     * @return CommonResp
-    */
-    @ExceptionHandler(value= Exception.class)
+    @ExceptionHandler(value = Exception.class)
     @ResponseBody
     public CommonResp<?> exceptionHandler(Exception e) throws Exception{
-        CommonResp<Object> resp = new CommonResp<>();
+        CommonResp<?> resp = new CommonResp<>();
         log.error("系统异常",e);
         resp.setSuccess(false);
         resp.setMessage(e.getMessage());
         return resp;
     }
-    /***
-     * @description 业务异常
-     * @param e
-     * @return CommonResp
+
+    /**
+     * 业务异常统一处理
      */
-    @ExceptionHandler(value= BusinessException.class)
+    @ExceptionHandler(value = BusinessException.class)
     @ResponseBody
     public CommonResp<?> exceptionHandler(BusinessException e) {
-        CommonResp<?> resp = new CommonResp<>();
-        log.error("业务异常",e);
-        resp.setSuccess(false);
-       resp.setMessage(e.getE().getDesc());
-        return resp;
+        CommonResp<?> commonResp = new CommonResp<>();
+        log.error("业务异常:", e);
+        commonResp.setSuccess(false);
+        commonResp.setMessage(e.getE().getDesc());
+        return commonResp;
     }
-    /***
-     * @description 校验异常
-     * @param e
-     * @return CommonResp
+    /**
+     * 数据校验统一处理
      */
-    @ExceptionHandler(value= BindException.class)
+    @ExceptionHandler(value = BindException.class)
     @ResponseBody
     public CommonResp<?> exceptionHandler(BindException e) {
-        CommonResp<?> resp = new CommonResp<>();
-        log.error("校验异常:{}",e.getBindingResult().getAllErrors().get(0).getDefaultMessage());
-        resp.setSuccess(false);
-        resp.setMessage(e.getBindingResult().getAllErrors().get(0).getDefaultMessage());
-        return resp;
+        CommonResp<?> commonResp = new CommonResp<>();
+        log.error("异常校验:{}", e.getBindingResult().getAllErrors().get(0).getDefaultMessage());
+        commonResp.setSuccess(false);
+        commonResp.setMessage(e.getBindingResult().getAllErrors().get(0).getDefaultMessage());
+        return commonResp;
     }
 }

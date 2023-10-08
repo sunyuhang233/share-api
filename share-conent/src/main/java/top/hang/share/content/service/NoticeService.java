@@ -19,6 +19,13 @@ public class NoticeService {
     @Resource
     private NoticeMapper noticeMapper;
 
+
+
+    /***
+     * @description 通知
+     *
+     * @return
+    */
     public Notice getLatest(){
         LambdaQueryWrapper<Notice> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(Notice::getShowFlag,1);
@@ -26,4 +33,6 @@ public class NoticeService {
         List<Notice> list = noticeMapper.selectList(wrapper);
         return list.get(0);
     }
+
+
 }

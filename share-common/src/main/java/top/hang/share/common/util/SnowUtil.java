@@ -2,13 +2,12 @@ package top.hang.share.common.util;
 
 import cn.hutool.core.util.IdUtil;
 
-/**
- * @author : Ahang
- * @program : share-api
- * @description : 雪花算法 封装 hutool 雪花算法
- * @create : 2023-10-07 13:13
- **/
 
+/**
+ * @author mqxu
+ * @date 2023/10/7
+ * @description SnowUtil 封装 hutool 雪花算法
+ **/
 public class SnowUtil {
     /**
      * 数据中心

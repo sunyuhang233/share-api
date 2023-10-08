@@ -13,7 +13,7 @@ Accept: application/json
 ###
 GET http://localhost:5000/user-service/user/count
 Accept: application/json
-token: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJuYmYiOjE2OTY2NTgyMjMsInBob25lIjoiMTM5NTE5MDUxNzEiLCJpZCI6MSwiZXhwIjoxNjk2NjY4MjIzLCJpYXQiOjE2OTY2NTgyMjN9.b7zk3vFHarvqytZXZYr09_0F0ybvP8bw_DJK547BbQE
+token: {{token}}
 
 ###
 POST http://localhost:5000/user-service/user/login

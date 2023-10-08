@@ -12,23 +12,21 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @author : Ahang
- * @program : share-api
- * @description : JwtUtil 封装 hutool 的 JWT 工具
- * @create : 2023-10-07 13:27
+ * @author mqxu
+ * @date 2023/10/7
+ * @description JwtUtil 封装 hutool 的 JWT 工具
  **/
-
 @Slf4j
 public class JwtUtil {
 
     /**
      * 盐值很重要，不能泄漏，且每个项目都应该不一样，可以放到配置文件中
      */
-    private static final String KEY = "AHang";
+    private static final String KEY = "InfinityX7";
 
     public static String createToken(Long id, String phone) {
         DateTime now = DateTime.now();
-        DateTime expTime = now.offsetNew(DateField.HOUR, 48);
+        DateTime expTime = now.offsetNew(DateField.SECOND, 100000);
         Map<String, Object> payload = new HashMap<>();
         // 签发时间
         payload.put(JWTPayload.ISSUED_AT, now);

@@ -7,12 +7,6 @@ import lombok.NoArgsConstructor;
 
 import java.util.Date;
 
-/**
- * @author : Ahang
- * @program : share-api
- * @description : User实体类
- * @create : 2023-10-07 10:39
- **/
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
