@@ -2,6 +2,7 @@ package top.hang.share.content.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.micrometer.common.util.StringUtils;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
@@ -29,14 +30,16 @@ public class ShareService {
     @Resource
     private ShareMapper shareMapper;
 
-    public List<Share> getList(String title, Long userId) {
+    public List<Share> getList(String title,Integer pageNo,Integer pageSize, Long userId) {
         LambdaQueryWrapper<Share> wrapper = new LambdaQueryWrapper<>();
         wrapper.orderByDesc(Share::getId);
         if (StringUtils.isNotEmpty(title)) {
             wrapper.like(Share::getTitle, title);
         }
-        wrapper.eq(Share::getAuditStatus, "PASS").eq(Share::getShowFlag, 1);
-        List<Share> shares = shareMapper.selectList(wrapper);
+        wrapper.eq(Share::getAuditStatus, "PASS").eq(Share::getShowFlag, true);
+        // 配置分页对象
+        Page<Share> page = Page.of(pageNo, pageSize);
+        List<Share> shares = shareMapper.selectList(page,wrapper);
         List<Share> sharesDeal;
         if (userId == null) {
             sharesDeal = shares.stream().peek(share -> share.setDownloadUrl(null)).collect(Collectors.toList());
