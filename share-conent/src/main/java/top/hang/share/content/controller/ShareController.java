@@ -3,6 +3,7 @@ package top.hang.share.content.controller;
 import cn.hutool.json.JSONObject;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.web.bind.annotation.*;
 import top.hang.share.common.resp.CommonResp;
 import top.hang.share.common.util.JwtUtil;
@@ -24,6 +25,7 @@ import java.util.List;
 @RestController
 @RequestMapping(value = "/share")
 @Slf4j
+@RefreshScope
 public class ShareController {
     @Resource
     private NoticeService noticeService;
