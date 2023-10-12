@@ -8,9 +8,11 @@ import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import top.hang.share.common.resp.CommonResp;
+import top.hang.share.content.domain.dto.ExchangeDTO;
 import top.hang.share.content.domain.entity.MidUserShare;
 import top.hang.share.content.domain.entity.Share;
 import top.hang.share.content.domain.entity.ShareResp;
+import top.hang.share.content.domain.entity.UserAddBonusMsgDTO;
 import top.hang.share.content.feign.User;
 import top.hang.share.content.feign.UserService;
 import top.hang.share.content.mapper.MidUserShareMapper;
@@ -37,7 +39,36 @@ public class ShareService {
     @Resource
     private UserService userService;
 
-    public List<Share> getList(String title,Integer pageNo,Integer pageSize, Long userId) {
+    public Share exchange(ExchangeDTO exchangeDTO) {
+        Long shareId = exchangeDTO.getShareId();
+        Long userId = exchangeDTO.getUserId();
+        Share share = shareMapper.selectById(shareId);
+        if (share == null) {
+            throw new IllegalArgumentException("该分享不存在");
+        }
+        MidUserShare userShare = midUserShareMapper.selectOne(new QueryWrapper<MidUserShare>().lambda()
+                .eq(MidUserShare::getUserId, userId)
+                .eq(MidUserShare::getShareId, shareId)
+        );
+        if (userShare != null) {
+            return share;
+        }
+
+        CommonResp<User> commonResp = userService.getUser(userId);
+        User user = commonResp.getData();
+        Integer price = share.getPrice();
+        if (price > user.getBonus()) {
+            throw new IllegalArgumentException("用户积分不够");
+        }
+        userService.updateBonus(UserAddBonusMsgDTO.builder()
+                .userId(userId)
+                .bonus(price * -1)
+                .build());
+        midUserShareMapper.insert(MidUserShare.builder().userId(userId).shareId(shareId).build());
+        return share;
+    }
+
+    public List<Share> getList(String title, Integer pageNo, Integer pageSize, Long userId) {
         LambdaQueryWrapper<Share> wrapper = new LambdaQueryWrapper<>();
         wrapper.orderByDesc(Share::getId);
         if (StringUtils.isNotEmpty(title)) {
@@ -47,7 +78,7 @@ public class ShareService {
         wrapper.eq(Share::getAuditStatus, "PASS").eq(Share::getShowFlag, true);
         // 配置分页对象
         Page<Share> page = Page.of(pageNo, pageSize);
-        List<Share> shares = shareMapper.selectList(page,wrapper);
+        List<Share> shares = shareMapper.selectList(page, wrapper);
         List<Share> sharesDeal;
         // 如果用户Id为空 把下载地址置为空
         if (userId == null) {

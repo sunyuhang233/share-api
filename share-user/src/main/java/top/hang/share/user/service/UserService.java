@@ -1,25 +1,54 @@
 package top.hang.share.user.service;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import jakarta.annotation.Resource;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import top.hang.share.common.exception.BusinessException;
 import top.hang.share.common.exception.BusinessExceptionEnum;
 import top.hang.share.common.util.JwtUtil;
 import top.hang.share.common.util.SnowUtil;
 import top.hang.share.user.domain.dto.LoginDTO;
+import top.hang.share.user.domain.dto.UserAddBonusMsgDTO;
+import top.hang.share.user.domain.entity.BonusEventLog;
 import top.hang.share.user.domain.entity.User;
 import top.hang.share.user.domain.resp.UserLoginResp;
+import top.hang.share.user.mapper.BonusEventLogMapper;
 import top.hang.share.user.mapper.UserMapper;
 
 import java.util.Date;
 
 @Service
+@Slf4j
 public class UserService {
     @Resource
     private UserMapper userMapper;
 
-    public Long count(){
+    @Resource
+    private BonusEventLogMapper bonusEventLogMapper;
+
+
+    @Transactional(rollbackFor = Exception.class)
+    public void updateBonus(UserAddBonusMsgDTO userAddBonusMsgDTO) {
+        System.out.println(userAddBonusMsgDTO);
+        Long userId = userAddBonusMsgDTO.getUserId();
+        Integer bonus = userAddBonusMsgDTO.getBonus();
+        User user = userMapper.selectById(userId);
+        user.setBonus(user.getBonus() + bonus);
+        userMapper.update(user, new LambdaQueryWrapper<User>().eq(User::getId, userId));
+        bonusEventLogMapper.insert(BonusEventLog.builder()
+                .userId(userId)
+                .value(bonus)
+                .description(userAddBonusMsgDTO.getDescription())
+                .event(userAddBonusMsgDTO.getEvent())
+                .createTime(new Date())
+                .build());
+        log.info("积分添加成功...");
+    }
+
+    public Long count() {
         return userMapper.selectCount(null);
     }
 
