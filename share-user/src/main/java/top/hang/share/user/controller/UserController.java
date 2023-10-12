@@ -4,10 +4,11 @@ package top.hang.share.user.controller;
 import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
+import top.hang.share.common.resp.CommonResp;
 import top.hang.share.user.domain.dto.LoginDTO;
+import top.hang.share.user.domain.entity.User;
 import top.hang.share.user.domain.resp.UserLoginResp;
 import top.hang.share.user.service.UserService;
-import top.hang.share.common.resp.CommonResp;
 
 @RestController
 @RequestMapping("/user")
@@ -37,5 +38,13 @@ public class UserController {
         CommonResp<Long> commonResp = new CommonResp<>();
         commonResp.setData(id);
         return commonResp;
+    }
+
+    @GetMapping("/{id}")
+    public CommonResp<User> getUserById(@PathVariable Long id) {
+        User user = userService.findById(id);
+        CommonResp<User> resp = new CommonResp<>();
+        resp.setData(user);
+        return resp;
     }
 }

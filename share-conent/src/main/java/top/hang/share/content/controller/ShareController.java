@@ -8,6 +8,7 @@ import top.hang.share.common.resp.CommonResp;
 import top.hang.share.common.util.JwtUtil;
 import top.hang.share.content.domain.entity.Notice;
 import top.hang.share.content.domain.entity.Share;
+import top.hang.share.content.domain.entity.ShareResp;
 import top.hang.share.content.service.NoticeService;
 import top.hang.share.content.service.ShareService;
 
@@ -62,10 +63,18 @@ public class ShareController {
     }
 
     @GetMapping(value = "/notice")
-    public CommonResp<Notice> getLatestNotice(){
+    public CommonResp<Notice> getLatestNotice() {
         CommonResp<Notice> resp = new CommonResp<>();
         Notice notice = noticeService.getLatest();
         resp.setData(notice);
+        return resp;
+    }
+
+    @GetMapping("/{id}")
+    public CommonResp<ShareResp> getShareById(@PathVariable Long id) {
+        ShareResp shareResp = shareService.findById(id);
+        CommonResp<ShareResp> resp = new CommonResp<>();
+        resp.setData(shareResp);
         return resp;
     }
 }

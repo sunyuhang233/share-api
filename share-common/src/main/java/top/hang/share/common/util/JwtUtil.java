@@ -22,7 +22,7 @@ public class JwtUtil {
     /**
      * 盐值很重要，不能泄漏，且每个项目都应该不一样，可以放到配置文件中
      */
-    private static final String KEY = "InfinityX7";
+    private static final String KEY = "AHang";
 
     public static String createToken(Long id, String phone) {
         DateTime now = DateTime.now();

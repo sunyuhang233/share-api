@@ -1,8 +1,17 @@
 server:
   port: 8002
-  servlet:
-    context-path: /content-service
+#  servlet:
+#    context-path: /content-service
 spring:
+  application:
+    name: content-service
+  cloud:
+    nacos:
+      discovery:
+        server-addr: localhost:8848
+        heart-beat-interval: 5000
+        heart-beat-timeout: 15000
+        namespace: dev
   jackson:
     #  格式化返回时间 yyyy-MM-dd HH:mm:ss
     date-format: yyyy-MM-dd HH:mm:ss

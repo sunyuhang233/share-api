@@ -7,8 +7,12 @@ import io.micrometer.common.util.StringUtils;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import top.hang.share.common.resp.CommonResp;
 import top.hang.share.content.domain.entity.MidUserShare;
 import top.hang.share.content.domain.entity.Share;
+import top.hang.share.content.domain.entity.ShareResp;
+import top.hang.share.content.feign.User;
+import top.hang.share.content.feign.UserService;
 import top.hang.share.content.mapper.MidUserShareMapper;
 import top.hang.share.content.mapper.ShareMapper;
 
@@ -29,6 +33,9 @@ public class ShareService {
     private MidUserShareMapper midUserShareMapper;
     @Resource
     private ShareMapper shareMapper;
+
+    @Resource
+    private UserService userService;
 
     public List<Share> getList(String title,Integer pageNo,Integer pageSize, Long userId) {
         LambdaQueryWrapper<Share> wrapper = new LambdaQueryWrapper<>();
@@ -57,5 +64,11 @@ public class ShareService {
             }).collect(Collectors.toList());
         }
         return sharesDeal;
+    }
+
+    public ShareResp findById(Long shareId){
+        Share share = shareMapper.selectById(shareId);
+        CommonResp<User> commonResp = userService.getUser(share.getUserId());
+        return ShareResp.builder().share(share).nickname(commonResp.getData().getNickname()).avatarUrl(commonResp.getData().getAvatarUrl()).build();
     }
 }
