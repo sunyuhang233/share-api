@@ -36,14 +36,17 @@ public class ShareService {
         if (StringUtils.isNotEmpty(title)) {
             wrapper.like(Share::getTitle, title);
         }
+        // 只显示通过的数据
         wrapper.eq(Share::getAuditStatus, "PASS").eq(Share::getShowFlag, true);
         // 配置分页对象
         Page<Share> page = Page.of(pageNo, pageSize);
         List<Share> shares = shareMapper.selectList(page,wrapper);
         List<Share> sharesDeal;
+        // 如果用户Id为空 把下载地址置为空
         if (userId == null) {
             sharesDeal = shares.stream().peek(share -> share.setDownloadUrl(null)).collect(Collectors.toList());
         } else {
+            // 根据用户Id查询 查询是否分享过这个链接 分享过就把下载地址默认给出 没有分享就把下载地址设置为null
             sharesDeal = shares.stream().peek(share -> {
                 MidUserShare midUserShare = midUserShareMapper.selectOne(new QueryWrapper<MidUserShare>().lambda()
                         .eq(MidUserShare::getUserId, userId)

@@ -3,6 +3,10 @@ server:
   servlet:
     context-path: /user-service
 spring:
+  jackson:
+    #  格式化返回时间 yyyy-MM-dd HH:mm:ss
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
   datasource:
     url: jdbc:mysql://localhost:3306/user_center?characterEncoding=UTF8&autoReconnect=true&serverTimezone=Asia/Shanghai
     username: root
