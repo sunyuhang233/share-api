@@ -57,3 +57,8 @@ token: {{token}}
   "reason": "通过审核",
   "showFlag": true
 }
+
+###
+GET http://localhost:5000/content-service/share/myExchange
+Content-Type: application/json
+token: {{token}}
