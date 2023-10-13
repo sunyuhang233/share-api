@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import top.hang.share.common.resp.CommonResp;
 import top.hang.share.content.domain.dto.ExchangeDTO;
+import top.hang.share.content.domain.dto.ShareRequestDTO;
 import top.hang.share.content.domain.entity.MidUserShare;
 import top.hang.share.content.domain.entity.Share;
 import top.hang.share.content.domain.entity.ShareResp;
@@ -18,6 +19,7 @@ import top.hang.share.content.feign.UserService;
 import top.hang.share.content.mapper.MidUserShareMapper;
 import top.hang.share.content.mapper.ShareMapper;
 
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -97,9 +99,42 @@ public class ShareService {
         return sharesDeal;
     }
 
-    public ShareResp findById(Long shareId){
+    public ShareResp findById(Long shareId) {
         Share share = shareMapper.selectById(shareId);
         CommonResp<User> commonResp = userService.getUser(share.getUserId());
         return ShareResp.builder().share(share).nickname(commonResp.getData().getNickname()).avatarUrl(commonResp.getData().getAvatarUrl()).build();
+    }
+
+    public int contribute(ShareRequestDTO shareRequestDTO) {
+        Share share = Share.builder()
+                .isOriginal(shareRequestDTO.getIsOriginal())
+                .author(shareRequestDTO.getAuthor())
+                .price(shareRequestDTO.getPrice())
+                .downloadUrl(shareRequestDTO.getDownloadUrl())
+                .summary(shareRequestDTO.getSummary())
+                .buyCount(0)
+                .title(shareRequestDTO.getTitle())
+                .userId(shareRequestDTO.getUserId())
+                .cover(shareRequestDTO.getCover())
+                .createTime(new Date())
+                .updateTime(new Date())
+                .showFlag(false)
+                .auditStatus("NOT_YET")
+                .reason("未审核")
+                .build();
+        return shareMapper.insert(share);
+    }
+
+    /***
+     * @description 查询待审核状态的shares列表
+     *
+     * @return List<Share>
+     */
+    public List<Share> queryShareNotYet() {
+        LambdaQueryWrapper<Share> wrapper = new LambdaQueryWrapper<>();
+        wrapper.orderByDesc(Share::getId);
+        wrapper.eq(Share::getShowFlag, false)
+                .eq(Share::getAuditStatus, "NOT_YET");
+        return shareMapper.selectList(wrapper);
     }
 }

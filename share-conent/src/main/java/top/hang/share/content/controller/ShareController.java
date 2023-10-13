@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import top.hang.share.common.resp.CommonResp;
 import top.hang.share.common.util.JwtUtil;
 import top.hang.share.content.domain.dto.ExchangeDTO;
+import top.hang.share.content.domain.dto.ShareRequestDTO;
 import top.hang.share.content.domain.entity.Notice;
 import top.hang.share.content.domain.entity.Share;
 import top.hang.share.content.domain.entity.ShareResp;
@@ -33,20 +34,29 @@ public class ShareController {
     @Resource
     private ShareService shareService;
 
-    private final int MAX=100;
+    private final int MAX = 100;
+
+    @PostMapping("/contribute")
+    public int contribute(@RequestBody ShareRequestDTO shareRequestDTO,
+                          @RequestHeader(value = "token", required = false) String token
+    ) {
+        long userIdFromToken = getUserIdFromToken(token);
+        shareRequestDTO.setUserId(userIdFromToken);
+        return shareService.contribute(shareRequestDTO);
+    }
 
     @GetMapping("/list")
     public CommonResp<List<Share>> getShareList(@RequestParam(required = false) String title,
-                                                @RequestParam(required = false,defaultValue = "1")Integer pageNo,
-                                                @RequestParam(required = false,defaultValue = "3")Integer pageSize,
-                                                @RequestHeader(value="token",required = false) String token
-                                                ){
-        if(pageSize> MAX){
-            pageSize=MAX;
+                                                @RequestParam(required = false, defaultValue = "1") Integer pageNo,
+                                                @RequestParam(required = false, defaultValue = "3") Integer pageSize,
+                                                @RequestHeader(value = "token", required = false) String token
+    ) {
+        if (pageSize > MAX) {
+            pageSize = MAX;
         }
-        long userId= getUserIdFromToken(token);
+        long userId = getUserIdFromToken(token);
         CommonResp<List<Share>> resp = new CommonResp<>();
-        List<Share> shareList = shareService.getList(title, pageNo,pageSize,userId);
+        List<Share> shareList = shareService.getList(title, pageNo, pageSize, userId);
         resp.setData(shareList);
         return resp;
     }
