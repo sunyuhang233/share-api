@@ -125,6 +125,17 @@ public class ShareService {
         return shareMapper.insert(share);
     }
 
+    public List<Share> myContribute(Integer pageNo,
+                                    Integer pageSize,
+                                    Long userId
+    ) {
+        LambdaQueryWrapper<Share> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(Share::getUserId, userId);
+        Page<Share> page = Page.of(pageNo, pageSize);
+        List<Share> selectList = shareMapper.selectList(page, wrapper);
+        return selectList;
+    }
+
     /***
      * @description 查询待审核状态的shares列表
      *
