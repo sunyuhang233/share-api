@@ -19,6 +19,7 @@ import top.hang.share.user.mapper.BonusEventLogMapper;
 import top.hang.share.user.mapper.UserMapper;
 
 import java.util.Date;
+import java.util.List;
 
 @Service
 @Slf4j
@@ -29,6 +30,12 @@ public class UserService {
     @Resource
     private BonusEventLogMapper bonusEventLogMapper;
 
+    public List<BonusEventLog> getBonusEventLog(Long userId) {
+        LambdaQueryWrapper<BonusEventLog> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(BonusEventLog::getUserId, userId);
+        List<BonusEventLog> bonusEventLogList = bonusEventLogMapper.selectList(wrapper);
+        return bonusEventLogList;
+    }
 
     @Transactional(rollbackFor = Exception.class)
     public void updateBonus(UserAddBonusMsgDTO userAddBonusMsgDTO) {

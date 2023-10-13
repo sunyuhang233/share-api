@@ -45,6 +45,12 @@ Content-Type: application/json
 token: {{token}}
 
 {
-"userId":1,
-"bonus":200
+  "userId": 1,
+  "bonus": 200
 }
+
+###
+GET http://localhost:5000/user-service/user/getBonus?id=1
+Content-Type: application/json
+token: {{token}}
+

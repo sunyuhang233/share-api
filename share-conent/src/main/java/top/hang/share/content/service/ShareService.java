@@ -132,22 +132,29 @@ public class ShareService {
     }
 
     public List<Share> getList(String title, Integer pageNo, Integer pageSize, Long userId) {
+        //构造查询条件
         LambdaQueryWrapper<Share> wrapper = new LambdaQueryWrapper<>();
-        wrapper.orderByDesc(Share::getId);
+        //按照 id 降序 查询所有数据
         if (StringUtils.isNotEmpty(title)) {
             wrapper.like(Share::getTitle, title);
         }
-        // 只显示通过的数据
+        //过滤出所有已经通过审核的数据并需要显示的数据
         wrapper.eq(Share::getAuditStatus, "PASS").eq(Share::getShowFlag, true);
-        // 配置分页对象
+
+        //内置的分页对象
         Page<Share> page = Page.of(pageNo, pageSize);
+        //执行条件查询
         List<Share> shares = shareMapper.selectList(page, wrapper);
+
+        //处理后的 Share 数据列表
         List<Share> sharesDeal;
-        // 如果用户Id为空 把下载地址置为空
+        //如果用户未登录，那么 downloadUrl 全部设置为 null
         if (userId == null) {
             sharesDeal = shares.stream().peek(share -> share.setDownloadUrl(null)).collect(Collectors.toList());
-        } else {
-            // 根据用户Id查询 查询是否分享过这个链接 分享过就把下载地址默认给出 没有分享就把下载地址设置为null
+
+        }
+        //如果用户登录了，查询mid_user_share,如果没有数据，那么这条 share 的downloadurl 也设置为 null
+        else {
             sharesDeal = shares.stream().peek(share -> {
                 MidUserShare midUserShare = midUserShareMapper.selectOne(new QueryWrapper<MidUserShare>().lambda()
                         .eq(MidUserShare::getUserId, userId)
@@ -159,7 +166,6 @@ public class ShareService {
         }
         return sharesDeal;
     }
-
     public ShareResp findById(Long shareId) {
         Share share = shareMapper.selectById(shareId);
         CommonResp<User> commonResp = userService.getUser(share.getUserId());
