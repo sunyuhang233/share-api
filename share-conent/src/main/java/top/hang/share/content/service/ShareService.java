@@ -6,14 +6,18 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.micrometer.common.util.StringUtils;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.springframework.stereotype.Service;
 import top.hang.share.common.resp.CommonResp;
 import top.hang.share.content.domain.dto.ExchangeDTO;
+import top.hang.share.content.domain.dto.ShareAuditDTO;
 import top.hang.share.content.domain.dto.ShareRequestDTO;
+import top.hang.share.content.domain.dto.UserAddBonusMQDTO;
 import top.hang.share.content.domain.entity.MidUserShare;
 import top.hang.share.content.domain.entity.Share;
 import top.hang.share.content.domain.entity.ShareResp;
 import top.hang.share.content.domain.entity.UserAddBonusMsgDTO;
+import top.hang.share.content.enums.AuditStatusEnum;
 import top.hang.share.content.feign.User;
 import top.hang.share.content.feign.UserService;
 import top.hang.share.content.mapper.MidUserShareMapper;
@@ -21,6 +25,7 @@ import top.hang.share.content.mapper.ShareMapper;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -40,6 +45,47 @@ public class ShareService {
 
     @Resource
     private UserService userService;
+
+    @Resource
+    private RocketMQTemplate rocketMQTemplate;
+
+    /***
+     * @description 审核
+     * @param id id
+     * @param shareAuditDTO shareAuditDTO
+     * @return Share
+     */
+    public Share auditById(Long id, ShareAuditDTO shareAuditDTO) {
+        Share share = shareMapper.selectById(id);
+        if (share == null) {
+            throw new IllegalArgumentException("参数非法 该分享不存在");
+        }
+        if (!Objects.equals("NOT_YET", share.getAuditStatus())) {
+            throw new IllegalArgumentException("参数非法 该分享已审核或者审核不通过");
+        }
+        share.setAuditStatus(shareAuditDTO.getAuditStatusEnum().toString());
+        share.setReason(shareAuditDTO.getReason());
+        share.setShowFlag(shareAuditDTO.getShowFlag());
+        LambdaQueryWrapper<Share> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(Share::getId, id);
+        this.shareMapper.update(share, wrapper);
+        this.midUserShareMapper.insert(
+                MidUserShare.builder()
+                        .userId(share.getUserId())
+                        .shareId(id)
+                        .build()
+        );
+        if (AuditStatusEnum.PASS.equals(shareAuditDTO.getAuditStatusEnum())) {
+            this.rocketMQTemplate.convertAndSend(
+                    "add-bonus",
+                    UserAddBonusMQDTO.builder()
+                            .userId(share.getUserId())
+                            .bonus(50)
+                            .build()
+            );
+        }
+        return share;
+    }
 
     public Share exchange(ExchangeDTO exchangeDTO) {
         Long shareId = exchangeDTO.getShareId();

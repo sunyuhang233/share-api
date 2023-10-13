@@ -1,9 +1,9 @@
 package top.hang.share.content.controller;
 
 import jakarta.annotation.Resource;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import top.hang.share.common.resp.CommonResp;
+import top.hang.share.content.domain.dto.ShareAuditDTO;
 import top.hang.share.content.domain.entity.Share;
 import top.hang.share.content.service.ShareService;
 
@@ -23,7 +23,17 @@ public class ShareAdminController {
     private ShareService shareService;
 
     @GetMapping(value = "/list")
-    public List<Share> getSharesNotYet() {
-        return shareService.queryShareNotYet();
+    public CommonResp<List<Share>> getSharesNotYet() {
+        CommonResp<List<Share>> resp = new CommonResp<>();
+        List<Share> shares = shareService.queryShareNotYet();
+        resp.setData(shares);
+        return resp;
+    }
+
+    @PostMapping(value = "/audit/{id}")
+    public CommonResp<Share> auditById(@PathVariable Long id, @RequestBody ShareAuditDTO shareAuditDTO) {
+        CommonResp<Share> resp = new CommonResp<>();
+        resp.setData(shareService.auditById(id, shareAuditDTO));
+        return resp;
     }
 }

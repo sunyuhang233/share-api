@@ -25,3 +25,9 @@ spring:
 logging:
   level:
     top.hang.share.user.mapper: debug
+
+rocketmq:
+  name-server: 124.222.40.218:9876
+  producer:
+    group: test-group
+  #必须指定group
