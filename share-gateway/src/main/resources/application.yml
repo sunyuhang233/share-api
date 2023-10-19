@@ -32,3 +32,20 @@ spring:
             allowedMethods: "*"   # 允许跨域的method， 默认为GET和OPTIONS，设置*为全部
             allowedHeaders: "*"   # 允许跨域请求里的head字段，设置*为全部
             maxAge: "3600" #跨域检测有效期 会发起一个OPTION请求
+
+
+
+knife4j:
+  # 聚合swagger文档
+  gateway:
+    enabled: true
+    routes:
+      - name: route-user
+        # 真实子服务访问url地址-提供OpenAPI的文档
+        url: /user-service/v3/api-docs?group=user
+        service-name: user-service
+        order: 2
+      - name: route-content
+        url: /content-service/v3/api-docs?group=content
+        service-name: content-service
+        order: 3

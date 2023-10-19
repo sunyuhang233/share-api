@@ -24,4 +24,13 @@ public class CommonResp<T> {
      */
     private T data;
 
+    public static CommonResp error() {
+        CommonResp<Object> resp = new CommonResp<>();
+        resp.success = false;
+        resp.message = "错误";
+        resp.data = null;
+        return resp;
+    }
+
+
 }
